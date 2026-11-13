@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Médico de Mamá</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-light: #ccfbf1;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+    header {
+      background: var(--primary); color: white; padding: 18px 20px;
+      text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    header h1 { margin: 0; font-size: 1.4rem; }
+    header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.9; }
+    .container { max-width: 720px; margin: 20px auto; padding: 0 16px; }
+    
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      flex: 1; padding: 12px 10px; border: 1px solid var(--border);
+      background: var(--card); border-radius: 10px; font-weight: 600;
+      cursor: pointer; color: var(--muted); transition: 0.2s; min-width: 110px;
+    }
+    .tab-btn.active {
+      background: var(--primary); color: white; border-color: var(--primary);
+    }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .card {
+      background: var(--card); border-radius: 12px; padding: 18px;
+      margin-bottom: 16px; border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card h2 { margin-top: 0; font-size: 1.15rem; color: var(--primary); }
+    
+    label { display: block; font-weight: 600; font-size: 0.9rem; margin: 12px 0 4px; }
+    input, textarea, select {
+      width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1;
+      border-radius: 8px; font-size: 1rem; background: #fff;
+    }
+    textarea { resize: vertical; min-height: 75px; }
+    
+    .row { display: flex; gap: 12px; }
+    .row > div { flex: 1; }
+    
+    .btn {
+      background: var(--primary); color: white; border: none;
+      padding: 12px 18px; border-radius: 8px; font-size: 1rem;
+      font-weight: 600; cursor: pointer; width: 100%; margin-top: 16px;
+    }
+    .btn:hover { opacity: 0.92; }
+    .btn-outline {
+      background: transparent; color: var(--primary); border: 2px solid var(--primary);
+      margin-top: 10px;
+    }
+    .btn-sm {
+      padding: 6px 12px; font-size: 0.85rem; width: auto; margin-top: 0;
+    }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+
+    .item {
+      border-left: 4px solid var(--primary); padding: 12px 14px;
+      background: #f1f5f9; border-radius: 0 8px 8px 0; margin-bottom: 12px;
+      position: relative;
+    }
+    .item.done { border-left-color: var(--success); opacity: 0.75; }
+    .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .item-title { font-weight: 700; font-size: 1.05rem; margin: 0; }
+    .badge {
+      display: inline-block; padding: 3px 8px; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; background: var(--primary-light); color: var(--primary);
+    }
+    .item p { margin: 6px 0; font-size: 0.95rem; line-height: 1.4; }
+    .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .empty { text-align: center; color: var(--muted); padding: 20px; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🩺 Control Médico de Mamá</h1>
+  <p>Consultas, recetas, horarios de pastillas y próximos estudios</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('meds', this)">💊 Medicamentos</button>
+    <button class="tab-btn" onclick="showTab('citas', this)">📅 Próximas Citas</button>
+    <button class="tab-btn" onclick="showTab('historial', this)">📋 Qué dijo el Médico</button>
+  </div>
+
+  <!-- SECCIÓN 1: MEDICAMENTOS -->
+  <div id="meds" class="section active">
+    <div class="card">
+      <h2>➕ Agregar Medicamento</h2>
+      <label>Nombre del medicamento</label>
+      <input type="text" id="medName" placeholder="Ej. Losartán 50mg">
+      
+      <div class="row">
+        <div>
+          <label>Dosis / Cantidad</label>
+          <input type="text" id="medDose" placeholder="Ej. 1 pastilla">
+        </div>
+        <div>
+          <label>Horarios de toma</label>
+          <input type="text" id="medTime" placeholder="Ej. 08:00 y 20:00">
+        </div>
+      </div>
+
+      <label>Indicaciones (con comida, por cuántos días, etc.)</label>
+      <input type="text" id="medNotes" placeholder="Ej. Después del desayuno durante 30 días">
+      
+      <button class="btn" onclick="addMed()">Guardar Medicamento</button>
+    </div>
+
+    <div class="card">
+      <h2>🕒 Tomas Activas de Hoy</h2>
+      <div id="medList"></div>
+      <button class="btn btn-outline" onclick="resetTodayMeds()">🔄 Reiniciar tomas para un nuevo día</button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2: PRÓXIMAS CITAS Y ANÁLISIS -->
+  <div id="citas" class="section">
+    <div class="card">
+      <h2>➕ Agendar Cita o Estudio</h2>
+      <div class="row">
+        <div>
+          <label>Tipo</label>
+          <select id="citaType">
+            <option value="Consulta Médica">Consulta Médica</option>
+            <option value="Análisis de Sangre / Lab">Análisis de Laboratorio</option>
+            <option value="Estudio / Ecografía / Rayos X">Estudio / Imagen</option>
+          </select>
+        </div>
+        <div>
+          <label>Fecha y Hora</label>
+          <input type="datetime-local" id="citaDate">
+        </div>
+      </div>
+
+      <label>Especialidad / Qué estudio es</label>
+      <input type="text" id="citaTitle" placeholder="Ej. Cardiología - Dr. Pérez / Perfil lipídico">
+
+      <label>Preparación o lugar (ayunas, llevar estudios previos)</label>
+      <input type="text" id="citaNotes" placeholder="Ej. Ir en ayunas de 8 horas, Clínica Central">
+
+      <button class="btn" onclick="addCita()">Guardar en Agenda</button>
+    </div>
+
+    <div class="card">
+      <h2>🗓️ Agenda Pendiente</h2>
+      <div id="citaList"></div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3: HISTORIAL DE CONSULTAS -->
+  <div id="historial" class="section">
+    <div class="card">
+      <h2>📝 Registrar lo que dijo el Médico</h2>
+      <div class="row">
+        <div>
+          <label>Fecha de la consulta</label>
+          <input type="date" id="histDate">
+        </div>
+        <div>
+          <label>Especialidad / Médico</label>
+          <input type="text" id="histDoc" placeholder="Ej. Medicina Interna">
+        </div>
+      </div>
+
+      <label>¿Qué diagnóstico o explicación dio?</label>
+      <textarea id="histSummary" placeholder="Escribe en palabras simples qué encontró el médico, qué dijo sobre la presión, exámenes, etc."></textarea>
+
+      <label>¿Qué recetó o qué cambios hizo?</label>
+      <textarea id="histRx" placeholder="Ej. Subió la dosis de la mañana, pidió análisis de sangre y volver en 1 mes."></textarea>
+
+      <button class="btn" onclick="addHist()">Guardar Resumen</button>
+    </div>
+
+    <div class="card">
+      <h2>🗂️ Bitácora de Consultas</h2>
+      <div id="histList"></div>
+      <button class="btn btn-outline" onclick="shareSummary()">📲 Copiar resumen para WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let data = JSON.parse(localStorage.getItem('saludMamaData')) || {
+    meds: [], citas: [], hist: []
+  };
+
+  function save() {
+    localStorage.setItem('saludMamaData', JSON.stringify(data));
+    render();
+  }
+
+  function showTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function addMed() {
+    const name = document.getElementById('medName').value.trim();
+    const dose = document.getElementById('medDose').value.trim();
+    const time = document.getElementById('medTime').value.trim();
+    const notes = document.getElementById('medNotes').value.trim();
+    if (!name) return alert('Por favor escribe el nombre del medicamento.');
+    data.meds.push({ id: Date.now(), name, dose, time, notes, taken: false });
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medTime').value = '';
+    document.getElementById('medNotes').value = '';
+    save();
+  }
+
+  function toggleMed(id) {
+    const med = data.meds.find(m => m.id === id);
+    if (med) med.taken = !med.taken;
+    save();
+  }
+
+  function resetTodayMeds() {
+    data.meds.forEach(m => m.taken = false);
+    save();
+  }
+
+  function addCita() {
+    const type = document.getElementById('citaType').value;
+    const date = document.getElementById('citaDate').value;
+    const title = document.getElementById('citaTitle').value.trim();
+    const notes = document.getElementById('citaNotes').value.trim();
+    if (!title || !date) return alert('Completa el título y la fecha de la cita.');
+    data.citas.push({ id: Date.now(), type, date, title, notes });
+    data.citas.sort((a, b) => new Date(a.date) - new Date(b.date));
+    document.getElementById('citaTitle').value = '';
+    document.getElementById('citaNotes').value = '';
+    save();
+  }
+
+  function addHist() {
+    const date = document.getElementById('histDate').value;
+    const doc = document.getElementById('histDoc').value.trim();
+    const summary = document.getElementById('histSummary').value.trim();
+    const rx = document.getElementById('histRx').value.trim();
+    if (!doc || !summary) return alert('Indica el médico/especialidad y qué explicó.');
+    data.hist.unshift({ id: Date.now(), date, doc, summary, rx });
+    document.getElementById('histDoc').value = '';
+    document.getElementById('histSummary').value = '';
+    document.getElementById('histRx').value = '';
+    save();
+  }
+
+  function deleteItem(category, id) {
+    if (!confirm('¿Eliminar este registro?')) return;
+    data[category] = data[category].filter(item => item.id !== id);
+    save();
+  }
+
+  function formatDate(dtStr) {
+    if (!dtStr) return 'Sin fecha';
+    const d = new Date(dtStr);
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function render() {
+    const medList = document.getElementById('medList');
+    medList.innerHTML = data.meds.length ? data.meds.map(m => `
+      <div class="item ${m.taken ? 'done' : ''}">
+        <div class="item-header">
+          <p class="item-title">${m.name} (${m.dose || 'Dosis no especificada'})</p>
+          <span class="badge">⏰ ${m.time || 'Sin hora'}</span>
+        </div>
+        ${m.notes ? `<p>📌 ${m.notes}</p>` : ''}
+        <div class="actions">
+          <button class="btn btn-sm ${m.taken ? 'btn-outline' : 'btn-success'}" onclick="toggleMed(${m.id})">
+            ${m.taken ? '✅ Tomado hoy (Desmarcar)' : '⬜ Marcar como tomado'}
+          </button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('meds', ${m.id})">Borrar</button>
+        </div>
+      </div>
+    `).join('') : '<div class="empty">No hay medicamentos registrados aún.</div>';
+
+    const citaList = document.getElementById('citaList');
+    citaList.innerHTML = data.citas.length ? data.citas.map(c => `
+      <div class="item">
+        <div class="item-header">
+          <p class="item-title">${c.title}</p>
+          <span class="badge">${c.type}</span>
+        </div>
+        <p><strong>📅 Cuándo:</strong> ${formatDate(c.date)}</p>
+        ${c.notes ? `<p><strong>ℹ️ Indicaciones:</strong> ${c.notes}</p>` : ''}
+        <div class="actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('citas', ${c.id})">Completada / Borrar</button>
+        </div>
+      </div>
+    `).join('') : '<div class="empty">No hay citas ni estudios agendados.</div>';
+
+    const histList = document.getElementById('histList');
+    histList.innerHTML = data.hist.length ? data.hist.map(h => `
+      <div class="item">
+        <div class="item-header">
+          <p class="item-title">${h.doc}</p>
+          <span class="badge">${h.date || 'Fecha sin registrar'}</span>
+        </div>
+        <p><strong>🗣️ Qué dijo:</strong> ${h.summary}</p>
+        ${h.rx ? `<p><strong>💊 Qué recetó / Indicó:</strong> ${h.rx}</p>` : ''}
+        <div class="actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('hist', ${h.id})">Borrar</button>
+        </div>
+      </div>
+    `).join('') : '<div class="empty">Aún no has registrado consultas médicas.</div>';
+  }
+
+  function shareSummary() {
+    let text = "🩺 *RESUMEN MÉDICO DE MAMÁ*\n\n";
+    text += "*💊 MEDICAMENTOS ACTUALES:*\n";
+    data.meds.forEach(m => text += `- ${m.name} (${m.dose}) | Horario: ${m.time} ${m.notes ? '('+m.notes+')' : ''}\n`);
+    text += "\n*📅 PRÓXIMAS CITAS Y ANÁLISIS:*\n";
+    data.citas.forEach(c => text += `- [${c.type}] ${c.title} -> ${formatDate(c.date)}\n`);
+    navigator.clipboard.writeText(text).then(() => alert('¡Resumen copiado! Ya puedes pegarlo en WhatsApp.'));
+  }
+
+  render();
+</script>
+</body>
+</html>
