@@ -6,15 +6,9 @@
   <title>Control Médico de Mamá</title>
   <style>
     :root {
-      --primary: #0f766e;
-      --primary-light: #ccfbf1;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --danger: #dc2626;
-      --success: #16a34a;
-      --border: #e2e8f0;
+      --primary: #0f766e; --primary-light: #ccfbf1; --bg: #f8fafc;
+      --card: #ffffff; --text: #1e293b; --muted: #64748b;
+      --danger: #dc2626; --success: #16a34a; --border: #e2e8f0;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 40px; }
@@ -24,57 +18,54 @@
     }
     header h1 { margin: 0; font-size: 1.4rem; }
     header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.9; }
+    .status-badge {
+      display: inline-block; margin-top: 8px; padding: 3px 10px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      background: rgba(255,255,255,0.2);
+    }
     .container { max-width: 720px; margin: 20px auto; padding: 0 16px; }
-    
+    #loginScreen {
+      max-width: 380px; margin: 60px auto; background: var(--card);
+      padding: 28px 24px; border-radius: 14px; text-align: center;
+      border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    #appContent { display: none; }
     .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab-btn {
       flex: 1; padding: 12px 10px; border: 1px solid var(--border);
       background: var(--card); border-radius: 10px; font-weight: 600;
       cursor: pointer; color: var(--muted); transition: 0.2s; min-width: 110px;
     }
-    .tab-btn.active {
-      background: var(--primary); color: white; border-color: var(--primary);
-    }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
     .section { display: none; }
     .section.active { display: block; }
-
     .card {
       background: var(--card); border-radius: 12px; padding: 18px;
       margin-bottom: 16px; border: 1px solid var(--border);
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .card h2 { margin-top: 0; font-size: 1.15rem; color: var(--primary); }
-    
     label { display: block; font-weight: 600; font-size: 0.9rem; margin: 12px 0 4px; }
     input, textarea, select {
       width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1;
       border-radius: 8px; font-size: 1rem; background: #fff;
     }
     textarea { resize: vertical; min-height: 75px; }
-    
     .row { display: flex; gap: 12px; }
     .row > div { flex: 1; }
-    
     .btn {
       background: var(--primary); color: white; border: none;
       padding: 12px 18px; border-radius: 8px; font-size: 1rem;
       font-weight: 600; cursor: pointer; width: 100%; margin-top: 16px;
     }
     .btn:hover { opacity: 0.92; }
-    .btn-outline {
-      background: transparent; color: var(--primary); border: 2px solid var(--primary);
-      margin-top: 10px;
-    }
-    .btn-sm {
-      padding: 6px 12px; font-size: 0.85rem; width: auto; margin-top: 0;
-    }
+    .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); margin-top: 10px; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; width: auto; margin-top: 0; }
     .btn-danger { background: var(--danger); }
     .btn-success { background: var(--success); }
-
     .item {
       border-left: 4px solid var(--primary); padding: 12px 14px;
       background: #f1f5f9; border-radius: 0 8px 8px 0; margin-bottom: 12px;
-      position: relative;
     }
     .item.done { border-left-color: var(--success); opacity: 0.75; }
     .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
@@ -93,22 +84,27 @@
 <header>
   <h1>🩺 Control Médico de Mamá</h1>
   <p>Consultas, recetas, horarios de pastillas y próximos estudios</p>
+  <div id="syncStatus" class="status-badge">⏳ Esperando clave...</div>
 </header>
 
-<div class="container">
+<div id="loginScreen">
+  <h2 style="margin-top:0; color:var(--primary);">🔒 Acceso Familiar</h2>
+  <p style="color:var(--muted); font-size:0.95rem;">Ingresa la clave compartida para ver y actualizar el historial.</p>
+  <input type="password" id="pinInput" placeholder="Clave familiar" style="text-align:center; font-size:1.2rem; letter-spacing:3px;">
+  <button class="btn" onclick="checkPin()">Entrar</button>
+</div>
+<div id="appContent" class="container">
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('meds', this)">💊 Medicamentos</button>
     <button class="tab-btn" onclick="showTab('citas', this)">📅 Próximas Citas</button>
     <button class="tab-btn" onclick="showTab('historial', this)">📋 Qué dijo el Médico</button>
   </div>
 
-  <!-- SECCIÓN 1: MEDICAMENTOS -->
   <div id="meds" class="section active">
     <div class="card">
       <h2>➕ Agregar Medicamento</h2>
       <label>Nombre del medicamento</label>
       <input type="text" id="medName" placeholder="Ej. Losartán 50mg">
-      
       <div class="row">
         <div>
           <label>Dosis / Cantidad</label>
@@ -119,10 +115,8 @@
           <input type="text" id="medTime" placeholder="Ej. 08:00 y 20:00">
         </div>
       </div>
-
       <label>Indicaciones (con comida, por cuántos días, etc.)</label>
       <input type="text" id="medNotes" placeholder="Ej. Después del desayuno durante 30 días">
-      
       <button class="btn" onclick="addMed()">Guardar Medicamento</button>
     </div>
 
@@ -132,8 +126,6 @@
       <button class="btn btn-outline" onclick="resetTodayMeds()">🔄 Reiniciar tomas para un nuevo día</button>
     </div>
   </div>
-
-  <!-- SECCIÓN 2: PRÓXIMAS CITAS Y ANÁLISIS -->
   <div id="citas" class="section">
     <div class="card">
       <h2>➕ Agendar Cita o Estudio</h2>
@@ -151,13 +143,10 @@
           <input type="datetime-local" id="citaDate">
         </div>
       </div>
-
       <label>Especialidad / Qué estudio es</label>
       <input type="text" id="citaTitle" placeholder="Ej. Cardiología - Dr. Pérez / Perfil lipídico">
-
       <label>Preparación o lugar (ayunas, llevar estudios previos)</label>
       <input type="text" id="citaNotes" placeholder="Ej. Ir en ayunas de 8 horas, Clínica Central">
-
       <button class="btn" onclick="addCita()">Guardar en Agenda</button>
     </div>
 
@@ -167,7 +156,6 @@
     </div>
   </div>
 
-  <!-- SECCIÓN 3: HISTORIAL DE CONSULTAS -->
   <div id="historial" class="section">
     <div class="card">
       <h2>📝 Registrar lo que dijo el Médico</h2>
@@ -181,13 +169,10 @@
           <input type="text" id="histDoc" placeholder="Ej. Medicina Interna">
         </div>
       </div>
-
       <label>¿Qué diagnóstico o explicación dio?</label>
       <textarea id="histSummary" placeholder="Escribe en palabras simples qué encontró el médico, qué dijo sobre la presión, exámenes, etc."></textarea>
-
       <label>¿Qué recetó o qué cambios hizo?</label>
       <textarea id="histRx" placeholder="Ej. Subió la dosis de la mañana, pidió análisis de sangre y volver en 1 mes."></textarea>
-
       <button class="btn" onclick="addHist()">Guardar Resumen</button>
     </div>
 
@@ -198,80 +183,120 @@
     </div>
   </div>
 </div>
+<script type="module">
+  import { initializeApp } from "https://gstatic.com";
+  import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://gstatic.com";
 
-<script>
-  let data = JSON.parse(localStorage.getItem('saludMamaData')) || {
-    meds: [], citas: [], hist: []
+  // ==========================================
+  // 1. CAMBIA ESTA CLAVE POR EL PIN QUE QUIERAS:
+  const CLAVE_FAMILIAR = "76046550";
+
+  // 2. REEMPLAZA ESTOS VALORES CON LOS TUYOS DE FIREBASE:
+  const firebaseConfig = {
+  apiKey: "AIzaSyDR73YywI0QnmOjjk0c61Ne-f9DL9lvZOQ",
+  authDomain: "control-de-seguimiento-medico.firebaseapp.com",
+  projectId: "control-de-seguimiento-medico",
+  storageBucket: "control-de-seguimiento-medico.firebasestorage.app",
+  messagingSenderId: "372087982304",
+  appId: "1:372087982304:web:4cda5630854b4a0f926885"
+  };
+  // ==========================================
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  let medsData = [], citasData = [], histData = [];
+
+  window.checkPin = function() {
+    const val = document.getElementById('pinInput').value.trim();
+    if (val === CLAVE_FAMILIAR) {
+      localStorage.setItem('mamaPinOk', 'true');
+      iniciarApp();
+    } else {
+      alert('Clave incorrecta. Intenta de nuevo.');
+    }
   };
 
-  function save() {
-    localStorage.setItem('saludMamaData', JSON.stringify(data));
-    render();
-  }
+  function iniciarApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appContent').style.display = 'block';
+    const status = document.getElementById('syncStatus');
 
-  function showTab(id, btn) {
+    onSnapshot(query(collection(db, "meds"), orderBy("createdAt", "asc")), (snap) => {
+      medsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      status.textContent = "🟢 Conectado en tiempo real";
+      renderMeds();
+    }, (err) => {
+      status.textContent = "🔴 Error de conexión (revisa tus llaves)";
+      console.error(err);
+    });
+
+    onSnapshot(query(collection(db, "citas"), orderBy("date", "asc")), (snap) => {
+      citasData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCitas();
+    });
+
+    onSnapshot(query(collection(db, "hist"), orderBy("createdAt", "desc")), (snap) => {
+      histData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderHist();
+    });
+  }
+  window.showTab = function(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
-  }
+  };
 
-  function addMed() {
+  window.addMed = async function() {
     const name = document.getElementById('medName').value.trim();
     const dose = document.getElementById('medDose').value.trim();
     const time = document.getElementById('medTime').value.trim();
     const notes = document.getElementById('medNotes').value.trim();
     if (!name) return alert('Por favor escribe el nombre del medicamento.');
-    data.meds.push({ id: Date.now(), name, dose, time, notes, taken: false });
+    await addDoc(collection(db, "meds"), { name, dose, time, notes, taken: false, createdAt: Date.now() });
     document.getElementById('medName').value = '';
     document.getElementById('medDose').value = '';
     document.getElementById('medTime').value = '';
     document.getElementById('medNotes').value = '';
-    save();
-  }
+  };
 
-  function toggleMed(id) {
-    const med = data.meds.find(m => m.id === id);
-    if (med) med.taken = !med.taken;
-    save();
-  }
+  window.toggleMed = async function(id, currentStatus) {
+    await updateDoc(doc(db, "meds", id), { taken: !currentStatus });
+  };
 
-  function resetTodayMeds() {
-    data.meds.forEach(m => m.taken = false);
-    save();
-  }
+  window.resetTodayMeds = async function() {
+    for (const m of medsData) {
+      if (m.taken) await updateDoc(doc(db, "meds", m.id), { taken: false });
+    }
+  };
 
-  function addCita() {
+  window.addCita = async function() {
     const type = document.getElementById('citaType').value;
     const date = document.getElementById('citaDate').value;
     const title = document.getElementById('citaTitle').value.trim();
     const notes = document.getElementById('citaNotes').value.trim();
     if (!title || !date) return alert('Completa el título y la fecha de la cita.');
-    data.citas.push({ id: Date.now(), type, date, title, notes });
-    data.citas.sort((a, b) => new Date(a.date) - new Date(b.date));
+    await addDoc(collection(db, "citas"), { type, date, title, notes, createdAt: Date.now() });
     document.getElementById('citaTitle').value = '';
     document.getElementById('citaNotes').value = '';
-    save();
-  }
+  };
 
-  function addHist() {
+  window.addHist = async function() {
     const date = document.getElementById('histDate').value;
-    const doc = document.getElementById('histDoc').value.trim();
+    const docName = document.getElementById('histDoc').value.trim();
     const summary = document.getElementById('histSummary').value.trim();
     const rx = document.getElementById('histRx').value.trim();
-    if (!doc || !summary) return alert('Indica el médico/especialidad y qué explicó.');
-    data.hist.unshift({ id: Date.now(), date, doc, summary, rx });
+    if (!docName || !summary) return alert('Indica el médico/especialidad y qué explicó.');
+    await addDoc(collection(db, "hist"), { date, doc: docName, summary, rx, createdAt: Date.now() });
     document.getElementById('histDoc').value = '';
     document.getElementById('histSummary').value = '';
     document.getElementById('histRx').value = '';
-    save();
-  }
+  };
 
-  function deleteItem(category, id) {
+  window.deleteItem = async function(col, id) {
     if (!confirm('¿Eliminar este registro?')) return;
-    data[category] = data[category].filter(item => item.id !== id);
-    save();
-  }
+    await deleteDoc(doc(db, col, id));
+  };
 
   function formatDate(dtStr) {
     if (!dtStr) return 'Sin fecha';
@@ -279,9 +304,9 @@
     return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  function render() {
-    const medList = document.getElementById('medList');
-    medList.innerHTML = data.meds.length ? data.meds.map(m => `
+  function renderMeds() {
+    const list = document.getElementById('medList');
+    list.innerHTML = medsData.length ? medsData.map(m => `
       <div class="item ${m.taken ? 'done' : ''}">
         <div class="item-header">
           <p class="item-title">${m.name} (${m.dose || 'Dosis no especificada'})</p>
@@ -289,16 +314,18 @@
         </div>
         ${m.notes ? `<p>📌 ${m.notes}</p>` : ''}
         <div class="actions">
-          <button class="btn btn-sm ${m.taken ? 'btn-outline' : 'btn-success'}" onclick="toggleMed(${m.id})">
+          <button class="btn btn-sm ${m.taken ? 'btn-outline' : 'btn-success'}" onclick="toggleMed('${m.id}', ${m.taken})">
             ${m.taken ? '✅ Tomado hoy (Desmarcar)' : '⬜ Marcar como tomado'}
           </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('meds', ${m.id})">Borrar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('meds', '${m.id}')">Borrar</button>
         </div>
       </div>
     `).join('') : '<div class="empty">No hay medicamentos registrados aún.</div>';
+  }
 
-    const citaList = document.getElementById('citaList');
-    citaList.innerHTML = data.citas.length ? data.citas.map(c => `
+  function renderCitas() {
+    const list = document.getElementById('citaList');
+    list.innerHTML = citasData.length ? citasData.map(c => `
       <div class="item">
         <div class="item-header">
           <p class="item-title">${c.title}</p>
@@ -307,13 +334,15 @@
         <p><strong>📅 Cuándo:</strong> ${formatDate(c.date)}</p>
         ${c.notes ? `<p><strong>ℹ️ Indicaciones:</strong> ${c.notes}</p>` : ''}
         <div class="actions">
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('citas', ${c.id})">Completada / Borrar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('citas', '${c.id}')">Completada / Borrar</button>
         </div>
       </div>
     `).join('') : '<div class="empty">No hay citas ni estudios agendados.</div>';
+  }
 
-    const histList = document.getElementById('histList');
-    histList.innerHTML = data.hist.length ? data.hist.map(h => `
+  function renderHist() {
+    const list = document.getElementById('histList');
+    list.innerHTML = histData.length ? histData.map(h => `
       <div class="item">
         <div class="item-header">
           <p class="item-title">${h.doc}</p>
@@ -322,22 +351,24 @@
         <p><strong>🗣️ Qué dijo:</strong> ${h.summary}</p>
         ${h.rx ? `<p><strong>💊 Qué recetó / Indicó:</strong> ${h.rx}</p>` : ''}
         <div class="actions">
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('hist', ${h.id})">Borrar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('hist', '${h.id}')">Borrar</button>
         </div>
       </div>
     `).join('') : '<div class="empty">Aún no has registrado consultas médicas.</div>';
   }
 
-  function shareSummary() {
+  window.shareSummary = function() {
     let text = "🩺 *RESUMEN MÉDICO DE MAMÁ*\n\n";
     text += "*💊 MEDICAMENTOS ACTUALES:*\n";
-    data.meds.forEach(m => text += `- ${m.name} (${m.dose}) | Horario: ${m.time} ${m.notes ? '('+m.notes+')' : ''}\n`);
+    medsData.forEach(m => text += `- ${m.name} (${m.dose}) | Horario: ${m.time} ${m.notes ? '('+m.notes+')' : ''}\n`);
     text += "\n*📅 PRÓXIMAS CITAS Y ANÁLISIS:*\n";
-    data.citas.forEach(c => text += `- [${c.type}] ${c.title} -> ${formatDate(c.date)}\n`);
+    citasData.forEach(c => text += `- [${c.type}] ${c.title} -> ${formatDate(c.date)}\n`);
     navigator.clipboard.writeText(text).then(() => alert('¡Resumen copiado! Ya puedes pegarlo en WhatsApp.'));
-  }
+  };
 
-  render();
+  if (localStorage.getItem('mamaPinOk') === 'true') {
+    iniciarApp();
+  }
 </script>
 </body>
 </html>
