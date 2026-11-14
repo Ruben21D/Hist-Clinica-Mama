@@ -202,7 +202,7 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyDR73YywI0QnmOjjk0c61Ne-f9DL9lvZOQ",
-      authDomain: "://firebaseapp.com",
+      authDomain: "control-de-seguimiento-medico.firebaseapp.com",
       projectId: "control-de-seguimiento-medico",
       storageBucket: "control-de-seguimiento-medico.firebasestorage.app",
       messagingSenderId: "372087982304",
@@ -377,6 +377,10 @@
 
   if (localStorage.getItem('mamaPinOk') === 'true') {
     iniciarApp();
+  }
+
+  } catch (e) {
+    status.textContent = "❌ Error: " + e.message;
   }
 </script>
 </body>
