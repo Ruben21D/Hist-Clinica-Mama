@@ -184,9 +184,9 @@
   </div>
 </div>
 <script type="module">
-  import { initializeApp } from "https://gstatic.com";
-  import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://gstatic.com";
-
+  const base = "https:" + "//://gstatic.com";
+  const { initializeApp } = await import(base + "firebase-app.js");
+  const { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } = await import(base + "firebase-firestore.js");
   // ==========================================
   // 1. CAMBIA ESTA CLAVE POR EL PIN QUE QUIERAS:
   const CLAVE_FAMILIAR = "76046550";
