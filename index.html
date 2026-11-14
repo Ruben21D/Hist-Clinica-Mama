@@ -184,37 +184,44 @@
   </div>
 </div>
 <script type="module">
-  const base = "https:" + "//://gstatic.com";
-  const { initializeApp } = await import(base + "firebase-app.js");
-  const { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } = await import(base + "firebase-firestore.js");
-  // ==========================================
-  // 1. CAMBIA ESTA CLAVE POR EL PIN QUE QUIERAS:
-  const CLAVE_FAMILIAR = "76046550";
+  const status = document.getElementById('syncStatus');
+  status.textContent = "🟡 Cargando sistema...";
 
-  // 2. REEMPLAZA ESTOS VALORES CON LOS TUYOS DE FIREBASE:
-  const firebaseConfig = {
-  apiKey: "AIzaSyDR73YywI0QnmOjjk0c61Ne-f9DL9lvZOQ",
-  authDomain: "control-de-seguimiento-medico.firebaseapp.com",
-  projectId: "control-de-seguimiento-medico",
-  storageBucket: "control-de-seguimiento-medico.firebasestorage.app",
-  messagingSenderId: "372087982304",
-  appId: "1:372087982304:web:4cda5630854b4a0f926885"
+  window.onerror = function(msg) {
+    status.textContent = "❌ Error: " + msg;
   };
-  // ==========================================
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  let medsData = [], citasData = [], histData = [];
+  try {
+    const base = "https:" + "//://gstatic.com";
+    const { initializeApp } = await import(base + "firebase-app.js");
+    const { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } = await import(base + "firebase-firestore.js");
 
-  window.checkPin = function() {
-    const val = document.getElementById('pinInput').value.trim();
-    if (val === CLAVE_FAMILIAR) {
-      localStorage.setItem('mamaPinOk', 'true');
-      iniciarApp();
-    } else {
-      alert('Clave incorrecta. Intenta de nuevo.');
-    }
-  };
+    const CLAVE_FAMILIAR = "76046550";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDR73YywI0QnmOjjk0c61Ne-f9DL9lvZOQ",
+      authDomain: "://firebaseapp.com",
+      projectId: "control-de-seguimiento-medico",
+      storageBucket: "control-de-seguimiento-medico.firebasestorage.app",
+      messagingSenderId: "372087982304",
+      appId: "1:372087982304:web:4cda5630854b4a0f926885"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let medsData = [], citasData = [], histData = [];
+
+    status.textContent = "🔑 Listo: ingresa tu clave";
+
+    window.checkPin = function() {
+      const val = document.getElementById('pinInput').value.trim();
+      if (val === CLAVE_FAMILIAR) {
+        localStorage.setItem('mamaPinOk', 'true');
+        iniciarApp();
+      } else {
+        alert('Clave incorrecta. Intenta de nuevo.');
+      }
+    };
 
   function iniciarApp() {
     document.getElementById('loginScreen').style.display = 'none';
