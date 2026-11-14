@@ -192,8 +192,9 @@
   };
 
   try {
-    const partes = ["https:/", "://gstatic.com", "firebasejs", "10.12.2", ""];
-    const base = partes.join("/");
+    const dom = "www." + "gstatic" + ".com";
+    const ruta = "fire" + "basejs" + "/10.12.2/";
+    const base = "https://" + dom + "/" + ruta;
     const { initializeApp } = await import(base + "firebase-app.js");
     const { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } = await import(base + "firebase-firestore.js");
 
