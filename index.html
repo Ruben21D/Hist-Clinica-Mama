@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Médico de Mamá</title>
+  <link rel="icon" type="image/png" href="icono.png">
+  <link rel="apple-touch-icon" href="icono.png">
+  <meta name="apple-mobile-web-app-title" content="Salud Mamá">
+  <link rel="manifest" href="manifest.json">
   <style>
     :root {
       --primary: #0f766e; --primary-light: #ccfbf1; --bg: #f8fafc;
@@ -202,7 +206,7 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyDR73YywI0QnmOjjk0c61Ne-f9DL9lvZOQ",
-      authDomain: "control-de-seguimiento-medico.firebaseapp.com",
+      authDomain: "://firebaseapp.com",
       projectId: "control-de-seguimiento-medico",
       storageBucket: "control-de-seguimiento-medico.firebasestorage.app",
       messagingSenderId: "372087982304",
@@ -377,10 +381,6 @@
 
   if (localStorage.getItem('mamaPinOk') === 'true') {
     iniciarApp();
-  }
-
-  } catch (e) {
-    status.textContent = "❌ Error: " + e.message;
   }
 </script>
 </body>
